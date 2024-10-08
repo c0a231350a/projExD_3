@@ -32,6 +32,12 @@ class Score:
     def update(self,screen):
         self.img = self.fonto.render(f"{self.score_num}",0, (0,0,255))
         screen.blit(self.img,[100,600])
+
+class Explosion:
+    def __init___(self):
+        pass
+    def update(self):
+        pass
     
 
 
