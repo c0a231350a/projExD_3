@@ -24,6 +24,9 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 class Score:
+    """
+    打ち落とした爆弾の数を表示するスコアクラス
+    """
     def __init__(self):
         self.score_num = 0
         self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
