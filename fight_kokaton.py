@@ -18,11 +18,12 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     戻り値：横方向，縦方向のはみ出し判定結果（画面内：True／画面外：False）
     """
     yoko, tate = True, True
-    if obj_rct.left < 0 or WIDTH < obj_rct.right:
+    if obj_rct.right < 0 or WIDTH < obj_rct.left:
         yoko = False
-    if obj_rct.top < 0 or HEIGHT < obj_rct.bottom:
+    if obj_rct.bottom < 0 or HEIGHT < obj_rct.top:
         tate = False
     return yoko, tate
+
 class Score:
     def __init__(self):
         self.score_num = 0
@@ -105,7 +106,7 @@ class Beam:
         ビーム画像Surfaceを生成する
         引数 bird：ビームを放つこうかとん（Birdインスタンス）
         """
-        self.img = pg.image.load("fig/beam.png")  # ビームSurface
+        self.img = pg.transform.rotozoom(pg.image.load("fig/beam.png"), 0.0, 2.0)  # ビームSurface
         self.rct = self.img.get_rect()  # ビームSurfaceのRectを抽出
         self.rct.centery = bird.rct.centery  # こうかとんの中心縦座標をビームの縦座標
         self.rct.left = bird.rct.right  # こうかとんの右座標をビームの左座標
@@ -162,6 +163,7 @@ def main():
     bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
+    beams = []
     tmr = 0
     while True:
         for event in pg.event.get():
@@ -169,7 +171,7 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)           
+                beams.append(Beam(bird))           
         screen.blit(bg_img, [0, 0])
         
         for bomb in bombs:
@@ -184,13 +186,17 @@ def main():
                 return
         
         for j, bomb in enumerate(bombs):
-            if beam is not None:
+            for i,beam in enumerate(beams):
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
                     score.score_num += 1 #スコアがふえる
-                    beam, bombs[j] = None, None             
-                    bombs = [bomb for bomb in bombs if bomb is not None]
+                    beams[i], bombs[j] = None, None             
                     bird.change_img(6, screen)
-                    pg.display.update()              
+                    pg.display.update()
+            beams = [beam for beam in beams if beam is not None]                          
+        bombs = [bomb for bomb in bombs if bomb is not None]
+        for i,beam in enumerate(beams):
+            if check_bound(beam.rct) != (True, True):
+                del beams[i]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
