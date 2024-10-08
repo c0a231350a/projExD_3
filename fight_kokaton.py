@@ -93,10 +93,10 @@ class Beam:
         ビーム画像Surfaceを生成する
         引数 bird：ビームを放つこうかとん（Birdインスタンス）
         """
-        self.img = pg.transform.rotozoom(pg.image.load(f"fig/beam.png"),0.0,2.0)
-        self.rct = self.img.get_rect()
-        self.rct.centery = bird.rct.centery
-        self.rct.left = bird.rct.right
+        self.img = pg.image.load("fig/beam.png")  # ビームSurface
+        self.rct = self.img.get_rect()  # ビームSurfaceのRectを抽出
+        self.rct.centery = bird.rct.centery  # こうかとんの中心縦座標をビームの縦座標
+        self.rct.left = bird.rct.right  # こうかとんの右座標をビームの左座標
         self.vx, self.vy = +5, 0
 
     def update(self, screen: pg.Surface):
@@ -145,8 +145,8 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
-    bomb = Bomb((255, 0, 0), 10)
     beam = None
+    bomb = Bomb((255, 0, 0), 10)
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -154,8 +154,8 @@ def main():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            #     # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                # スペースキー押下でBeamクラスのインスタンス生成
+                beam = Beam(bird)           
         screen.blit(bg_img, [0, 0])
         
         if bomb is not None:
@@ -169,15 +169,13 @@ def main():
         if beam is not None:
             if bomb is not None:
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
-                    beam = None 
-                    bomb = None
-                    pg.display.update()
+                    beam, bomb = None, None
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         if beam is not None:
-            beam.update(screen)
-        if bomb is not None:   
+            beam.update(screen) 
+        if bomb is not None:
             bomb.update(screen)
         pg.display.update()
         tmr += 1
