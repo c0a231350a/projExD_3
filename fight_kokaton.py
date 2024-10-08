@@ -34,8 +34,6 @@ class Score:
         screen.blit(self.img,[100,600])
     
 
-
-
 class Bird:
     """
     ゲームキャラクター（こうかとん）に関するクラス
