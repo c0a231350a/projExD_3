@@ -23,6 +23,17 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     if obj_rct.top < 0 or HEIGHT < obj_rct.bottom:
         tate = False
     return yoko, tate
+class Score:
+    def __init__(self):
+        self.score_num = 0
+        self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.img = self.fonto.render(f"{self.score_num}",0, (0,0,255))
+        
+    def update(self,screen):
+        self.img = self.fonto.render(f"{self.score_num}",0, (0,0,255))
+        screen.blit(self.img,[100,600])
+    
+
 
 
 class Bird:
@@ -146,6 +157,7 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
+    score = Score()
     beam = None
     bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
@@ -174,6 +186,7 @@ def main():
         for j, bomb in enumerate(bombs):
             if beam is not None:
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
+                    score.score_num += 1 #スコアがふえる
                     beam, bombs[j] = None, None             
                     bombs = [bomb for bomb in bombs if bomb is not None]
                     bird.change_img(6, screen)
@@ -185,6 +198,7 @@ def main():
             beam.update(screen) 
         for bomb in bombs:
             bomb.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
